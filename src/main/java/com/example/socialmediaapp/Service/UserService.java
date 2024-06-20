@@ -36,7 +36,6 @@ public class UserService {
         User user = userRepository.findById(id).orElse(null);
         return userMapper.userToResponse(user);
     }
-
     public UserResponse getByEmail(String email){
         User user = userRepository.findByEmail(email);
         return userMapper.userToResponse(user);
@@ -61,5 +60,9 @@ public class UserService {
 
     public void delete(int id){
         userRepository.deleteById(id);
+    }
+    public List<UserResponse> searchUsers(String query) {
+        List<User> users = userRepository.findByNameContainingIgnoreCase(query);
+        return userMapper.usersToResponses(users);
     }
 }
