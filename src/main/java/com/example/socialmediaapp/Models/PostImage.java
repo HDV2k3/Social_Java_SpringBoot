@@ -28,7 +28,8 @@ public class PostImage {
     @Column(name = "type")
     private String type;
 
-    @Column(name = "data",length = 1000)
+    @Lob
+    @Column(name = "data", columnDefinition = "LONGBLOB")
     private byte[] data;
     @NotNull
     @ManyToOne

@@ -1,5 +1,6 @@
 package com.example.socialmediaapp.api;
 
+import com.example.socialmediaapp.Models.User;
 import com.example.socialmediaapp.Request.UserAddRequest;
 import com.example.socialmediaapp.Responses.UserResponse;
 import com.example.socialmediaapp.Service.UserService;
@@ -45,4 +46,18 @@ public class UsersController {
         userService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+    @GetMapping("/search")
+    public ResponseEntity<List<UserResponse>> searchUsers(@RequestParam("query") String query) {
+        return ResponseEntity.ok(userService.searchUsers(query));
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable int id) {
+        User user = userService.getById(id);
+        if (user != null) {
+            return ResponseEntity.ok(user);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }
