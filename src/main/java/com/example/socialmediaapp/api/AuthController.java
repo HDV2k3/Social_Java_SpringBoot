@@ -6,6 +6,7 @@ import com.example.socialmediaapp.Repository.UserRepository;
 import com.example.socialmediaapp.Request.LoginRequest;
 import com.example.socialmediaapp.Request.RegisterRequest;
 import com.example.socialmediaapp.Security.JwtUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -60,6 +61,7 @@ public class AuthController {
         if (userRepository.findByEmail(registerRequest.getEmail())!=null){
             return new ResponseEntity<>("Email already exist",HttpStatus.BAD_REQUEST);
         }
+
         User user = new User();
         user.setEmail(registerRequest.getEmail());
         user.setName(registerRequest.getName());

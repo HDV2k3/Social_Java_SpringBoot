@@ -65,4 +65,8 @@ public class UserService {
         List<User> users = userRepository.findByNameContainingIgnoreCase(query);
         return userMapper.usersToResponses(users);
     }
+    public User getUserByFirebaseUid(String firebaseUid) {
+        return userRepository.findByFirebaseUid(firebaseUid);
+    }
+
 }
