@@ -19,8 +19,7 @@ import java.util.function.Function;
 @Service
 public class JwtUtil {
 
-    @Value("${jwt.secret}")
-    private String secret;
+    private String secret = "defaultsecretkeythatisatleastsixtyfourbitslong";
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
