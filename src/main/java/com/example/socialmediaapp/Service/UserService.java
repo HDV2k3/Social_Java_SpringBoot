@@ -3,30 +3,57 @@ package com.example.socialmediaapp.Service;
 
 import com.example.socialmediaapp.Mappers.UserMapper;
 import com.example.socialmediaapp.Models.Follow;
+import com.example.socialmediaapp.Models.NewLocationToken;
 import com.example.socialmediaapp.Models.User;
+import com.example.socialmediaapp.Models.UserLocation;
 import com.example.socialmediaapp.Repository.FollowRepository;
 import com.example.socialmediaapp.Repository.UserRepository;
 import com.example.socialmediaapp.Request.UserAddRequest;
 import com.example.socialmediaapp.Responses.UserFollowingResponse;
 import com.example.socialmediaapp.Responses.UserResponse;
+import com.example.socialmediaapp.persistence.NewLocationTokenRepository;
+import com.example.socialmediaapp.persistence.UserLocationRepository;
+import com.maxmind.geoip2.DatabaseReader;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.env.Environment;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.stereotype.Service;
 
 
+import java.net.InetAddress;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService {
-    private final UserMapper userMapper;
-    private final UserRepository userRepository;
-    private final FollowRepository followRepository;
     @Autowired
-    public UserService(UserMapper userMapper, UserRepository userRepository, FollowRepository followRepository) {
-        this.userMapper = userMapper;
-        this.userRepository = userRepository;
-        this.followRepository = followRepository;
-    }
+    private  UserMapper userMapper;
+    @Autowired
+    private  UserRepository userRepository;
+    @Autowired
+    private  FollowRepository followRepository;
+    @Autowired
+    private UserLocationRepository userLocationRepository;
+
+
+    @Autowired
+    private SessionRegistry sessionRegistry;
+
+    @Autowired
+    @Qualifier("GeoIPCountry")
+    private DatabaseReader databaseReader;
+
+
+
+
+    @Autowired
+    private NewLocationTokenRepository newLocationTokenRepository;
+
+    @Autowired
+    private Environment env;
 
     public List<UserResponse> getAll(){
 
@@ -65,8 +92,79 @@ public class UserService {
         List<User> users = userRepository.findByNameContainingIgnoreCase(query);
         return userMapper.usersToResponses(users);
     }
-    public User getUserByFirebaseUid(String firebaseUid) {
-        return userRepository.findByFirebaseUid(firebaseUid);
+
+    public NewLocationToken isNewLoginLocation(String username, String ip) {
+
+        if(!isGeoIpLibEnabled()) {
+            return null;
+        }
+
+        try {
+            final InetAddress ipAddress = InetAddress.getByName(ip);
+            final String country = databaseReader.country(ipAddress)
+                    .getCountry()
+                    .getName();
+
+            final User user = userRepository.findByEmail(username);
+            final UserLocation loc = userLocationRepository.findByCountryAndUser(country, user);
+            if ((loc == null) || !loc.isEnabled()) {
+                return createNewLocationToken(country, user);
+            }
+        } catch (final Exception e) {
+            return null;
+        }
+        return null;
+    }
+
+    public String isValidNewLocationToken(String token) {
+        final NewLocationToken locToken = newLocationTokenRepository.findByToken(token);
+        if (locToken == null) {
+            return null;
+        }
+        UserLocation userLoc = locToken.getUserLocation();
+        userLoc.setEnabled(true);
+        userLoc = userLocationRepository.save(userLoc);
+        newLocationTokenRepository.delete(locToken);
+        return userLoc.getCountry();
+    }
+
+    public void addUserLocation(User user, String ip) {
+
+        if(!isGeoIpLibEnabled()) {
+            return;
+        }
+
+        try {
+            // Check if the IP address is localhost (IPv4 or IPv6)
+            InetAddress ipAddress = InetAddress.getByName(ip);
+            if (ipAddress.isLoopbackAddress()) {
+                System.out.println("Loopback address detected: " + ipAddress);
+
+                // Assign the default IP address if it's localhost
+                ipAddress = InetAddress.getByName("1.52.164.94");
+            }
+            final String country = databaseReader.country(ipAddress)
+                    .getCountry()
+                    .getName();
+            UserLocation loc = new UserLocation(country, user);
+            loc.setEnabled(true);
+            userLocationRepository.save(loc);
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private boolean isGeoIpLibEnabled() {
+        return Boolean.parseBoolean(env.getProperty("geo.ip.lib.enabled"));
+    }
+
+    private NewLocationToken createNewLocationToken(String country, User user) {
+        UserLocation loc = new UserLocation(country, user);
+        loc = userLocationRepository.save(loc);
+
+        final NewLocationToken token = new NewLocationToken(UUID.randomUUID()
+                .toString(), loc);
+        return newLocationTokenRepository.save(token);
     }
 
 }
