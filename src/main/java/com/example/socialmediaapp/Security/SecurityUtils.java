@@ -13,7 +13,6 @@ public class SecurityUtils {
         }
         return (User) authentication.getPrincipal();
     }
-
     public static Integer getCurrentUserId() {
         User currentUser = getCurrentUser();
         return currentUser != null ? currentUser.getId() : null;

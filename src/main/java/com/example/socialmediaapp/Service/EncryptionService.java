@@ -33,17 +33,14 @@ public class EncryptionService {
         KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
         keyGen.initialize(2048);
         KeyPair pair = keyGen.generateKeyPair();
-
         String publicKey = Base64.getEncoder().encodeToString(pair.getPublic().getEncoded());
         String privateKey = Base64.getEncoder().encodeToString(pair.getPrivate().getEncoded());
-
         EncryptionKey encryptionKey = new EncryptionKey();
         encryptionKey.setUser(user);
         encryptionKey.setPublicKey(publicKey);
         encryptionKey.setPrivateKey(privateKey);
         encryptionKey.setCreatedAt(LocalDateTime.now());
         encryptionKey.setUpdatedAt(LocalDateTime.now());
-
         return encryptionKeyRepository.save(encryptionKey);
     }
 
@@ -63,7 +60,6 @@ public class EncryptionService {
         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicKeyBytes); // Create key specification
         KeyFactory keyFactory = KeyFactory.getInstance("RSA"); // Initialize key factory for RSA
         PublicKey publicKey = keyFactory.generatePublic(keySpec); // Generate the public key
-
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding"); // Initialize cipher for RSA with padding
         cipher.init(Cipher.ENCRYPT_MODE, publicKey); // Set cipher to encryption mode with the public key
         byte[] encryptedBytes = cipher.doFinal(message.getBytes()); // Encrypt the message
@@ -84,7 +80,6 @@ public class EncryptionService {
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateKeyBytes); // Create key specification
         KeyFactory keyFactory = KeyFactory.getInstance("RSA"); // Initialize key factory for RSA
         PrivateKey privateKey = keyFactory.generatePrivate(keySpec); // Generate the private key
-
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding"); // Initialize cipher for RSA with padding
         cipher.init(Cipher.DECRYPT_MODE, privateKey); // Set cipher to decryption mode with the private key
         byte[] decryptedBytes = cipher.doFinal(Base64.getDecoder().decode(encryptedMessage)); // Decrypt the message

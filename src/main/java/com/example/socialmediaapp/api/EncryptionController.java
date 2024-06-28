@@ -46,13 +46,17 @@ public class EncryptionController {
 
     @PostMapping("/encrypt")
     public ResponseEntity<String> encryptMessage(@RequestParam String message, @RequestParam String publicKey) throws Exception {
+
         String encryptedMessage = encryptionService.encryptMessage(message, publicKey);
         return ResponseEntity.ok(encryptedMessage);
     }
 
     @PostMapping("/decrypt")
     public ResponseEntity<String> decryptMessage(@RequestBody DecryptionRequest decryptionRequest) throws Exception {
-        String decryptedMessage = encryptionService.decryptMessage(decryptionRequest.getEncryptedMessage(), decryptionRequest.getPrivateKey());
-        return ResponseEntity.ok(decryptedMessage);
+        if(decryptionRequest.getEncryptedMessage() != null && decryptionRequest.getPrivateKey() != null) {
+            String decryptedMessage = encryptionService.decryptMessage(decryptionRequest.getEncryptedMessage(), decryptionRequest.getPrivateKey());
+            return ResponseEntity.ok(decryptedMessage);
+        }
+        return  ResponseEntity.ok(null);
     }
 }

@@ -137,12 +137,6 @@ public class UserService {
         try {
             // Check if the IP address is localhost (IPv4 or IPv6)
             InetAddress ipAddress = InetAddress.getByName(ip);
-            if (ipAddress.isLoopbackAddress()) {
-                System.out.println("Loopback address detected: " + ipAddress);
-
-                // Assign the default IP address if it's localhost
-                ipAddress = InetAddress.getByName("1.52.164.94");
-            }
             final String country = databaseReader.country(ipAddress)
                     .getCountry()
                     .getName();

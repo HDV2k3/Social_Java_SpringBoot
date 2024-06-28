@@ -40,7 +40,6 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
-
     @Autowired
     private UserService userService;
 
@@ -88,11 +87,8 @@ public class AuthController {
         user.setLastName(registerRequest.getLastName());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         User savedUser = userRepository.save(user);
-        userService.addUserLocation(savedUser, getClientIP(request));
+        userService.addUserLocation(savedUser, registerRequest.getIpAddress());
 
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(registerRequest.getEmail(), registerRequest.getPassword())
-        );
         return new ResponseEntity<>(jwtUtil.generateToken(
                 registerRequest.getEmail(),
                 userRepository.findByEmail(registerRequest.getEmail()).getId(),
