@@ -28,6 +28,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import org.springframework.web.client.RestTemplate;
+import org.springframework.http.ResponseEntity;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import ua_parser.Parser;
 
 import static java.util.Objects.nonNull;
@@ -140,7 +144,6 @@ public class DeviceService {
 
         return null;
     }
-
     private void unknownDeviceNotification(String deviceDetails, String location, String ip, String email) {
         final String subject = "Security Alert: New Login Detected on Your Account";
         final SimpleMailMessage notification = new SimpleMailMessage();
