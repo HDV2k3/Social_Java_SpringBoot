@@ -17,4 +17,6 @@ public class UserResponse {
     private List<UserFollowerResponse> followers;
     private List<UserFollowingResponse> following;
     Set<RoleResponse> roles;
+
+
 }
