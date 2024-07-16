@@ -1,6 +1,6 @@
-package com.example.socialmediaapp.enums;
-
-public enum Role {
-    ADMIN,
-    USER,
-}
+//package com.example.socialmediaapp.enums;
+//
+//public enum Role {
+//    ADMIN,
+//    USER,
+//}

@@ -3,15 +3,14 @@ package com.example.socialmediaapp.Service;
 
 import com.example.socialmediaapp.Models.DeviceMetadata;
 import com.example.socialmediaapp.Models.User;
+import com.example.socialmediaapp.Repository.DeviceMetadataRepository;
 import com.example.socialmediaapp.Repository.UserRepository;
-import com.example.socialmediaapp.persistence.DeviceMetadataRepository;
 import com.google.common.base.Strings;
 import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.maxmind.geoip2.model.CityResponse;
 
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.SimpleMailMessage;
@@ -21,18 +20,13 @@ import org.springframework.stereotype.Component;
 import ua_parser.Client;
 import ua_parser.Parser;
 import jakarta.servlet.http.HttpServletRequest;
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import org.springframework.web.client.RestTemplate;
-import org.springframework.http.ResponseEntity;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import ua_parser.Parser;
+
 
 import static java.util.Objects.nonNull;
 

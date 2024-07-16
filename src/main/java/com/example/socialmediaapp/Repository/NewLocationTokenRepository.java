@@ -1,4 +1,4 @@
-package com.example.socialmediaapp.persistence;
+package com.example.socialmediaapp.Repository;
 import com.example.socialmediaapp.Models.NewLocationToken;
 import com.example.socialmediaapp.Models.UserLocation;
 import org.springframework.data.jpa.repository.JpaRepository;

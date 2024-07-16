@@ -1,10 +1,9 @@
 package com.example.socialmediaapp.Config;
 
 import com.example.socialmediaapp.Security.CustomAuthenticationProvider;
-import com.example.socialmediaapp.Security.CustomUserDetailsService;
+import com.example.socialmediaapp.Service.CustomUserDetailsService;
 import com.example.socialmediaapp.Security.DifferentLocationChecker;
 import com.example.socialmediaapp.Security.JwtAuthFilter;
-import com.example.socialmediaapp.enums.Role;
 import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -37,20 +35,25 @@ import java.util.Collections;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
     @Autowired
     private JwtAuthFilter jwtFilter;
-
+    private final  String[] METHODS ={
+            "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"
+    };
+    private final  String[] HEADERS ={
+            "Authorization", "content-type"
+    };
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-        configuration.setExposedHeaders(Arrays.asList("Authorization", "content-type"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "content-type"));
+        String URL_FE = "http://localhost:3000";
+        configuration.setAllowedOrigins(Collections.singletonList(URL_FE));
+        configuration.setAllowedMethods(Arrays.asList(METHODS));
+        configuration.setExposedHeaders(Arrays.asList(HEADERS));
+        configuration.setAllowedHeaders(Arrays.asList(HEADERS));
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
@@ -81,7 +84,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers( "/ws/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/postimages/**").permitAll()
-//                        .requestMatchers(HttpMethod.GET,"/api/users/**").hasAuthority("ROLE_ADMIN") or
+//                        .requestMatchers(HttpMethod.GET,"/api/users/**").hasAuthority("ROLE_ADMIN")
 //                                .requestMatchers(HttpMethod.GET,"/api/users/**").hasRole(Role.ADMIN.name())
                         .anyRequest().authenticated()
                 )
