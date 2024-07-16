@@ -8,7 +8,6 @@ import java.util.List;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
     List<User> findByNameContainingIgnoreCase(String name);
-
     void deleteById(int id);
     User findByEmail(String email);
 }

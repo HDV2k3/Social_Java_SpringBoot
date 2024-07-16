@@ -10,6 +10,7 @@ import com.example.socialmediaapp.Responses.UserFollowingResponse;
 import com.example.socialmediaapp.Responses.UserResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
@@ -26,6 +27,7 @@ public interface UserMapper {
     UserFollowingResponse followToFollowingResponse(Follow follow);
     @Mapping(source = "followers",target = "followers")
     @Mapping(source = "following",target = "following")
+
     UserResponse userToResponse(User user);
 
     User requestToUser(UserAddRequest userAddRequest);

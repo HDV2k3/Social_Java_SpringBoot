@@ -66,6 +66,7 @@
 //}
 package com.example.socialmediaapp.Models;
 
+import com.nimbusds.oauth2.sdk.TokenIntrospectionSuccessResponse;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -94,11 +95,9 @@ public class User {
     @Column(name = "email")
     @Email
     private String email;
-
     @NotNull
     @Column(name = "last_name")
     private String lastName;
-
     @NotNull
     @Column(name = "password")
     private String password;
@@ -119,5 +118,7 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Comment> comments;
+    Set<String> roles;
+
 
 }
