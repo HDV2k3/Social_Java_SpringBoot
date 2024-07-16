@@ -24,7 +24,7 @@ public class Chat {
     @JoinColumn(name = "receiver_id")
     private User receiver;
 
-    @Column()
+    @Column(columnDefinition = "TEXT")
     private String message;
 
     @Column(columnDefinition = "TEXT")

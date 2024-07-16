@@ -4,6 +4,7 @@ import com.example.socialmediaapp.Security.CustomAuthenticationProvider;
 import com.example.socialmediaapp.Security.CustomUserDetailsService;
 import com.example.socialmediaapp.Security.DifferentLocationChecker;
 import com.example.socialmediaapp.Security.JwtAuthFilter;
+import com.example.socialmediaapp.enums.Role;
 import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,13 +29,10 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import ua_parser.Parser;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Objects;
 
 @Configuration
 @EnableWebSecurity
@@ -59,6 +57,9 @@ public class SecurityConfig {
         return source;
     }
 
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService);
+    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
@@ -80,14 +81,14 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers( "/ws/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/postimages/**").permitAll()
+//                        .requestMatchers(HttpMethod.GET,"/api/users/**").hasAuthority("ROLE_ADMIN") or
+//                                .requestMatchers(HttpMethod.GET,"/api/users/**").hasRole(Role.ADMIN.name())
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authProvider())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
-
 
     @Bean
     public AuthenticationManager authManager(HttpSecurity http) throws Exception {

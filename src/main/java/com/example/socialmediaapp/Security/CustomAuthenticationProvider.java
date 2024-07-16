@@ -4,6 +4,7 @@ import com.example.socialmediaapp.Models.User;
 import com.example.socialmediaapp.Repository.UserRepository;
 import com.example.socialmediaapp.Service.DeviceService;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -17,7 +18,10 @@ import java.io.IOException;
 
 public class CustomAuthenticationProvider implements AuthenticationProvider {
 
+    // Setters
+    @Setter
     private UserDetailsService userDetailsService;
+    @Setter
     private PasswordEncoder passwordEncoder;
     @Autowired
     private DeviceService deviceService;
@@ -56,12 +60,4 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         return CustomAuthenticationToken.class.isAssignableFrom(authentication);
     }
 
-    // Setters
-    public void setUserDetailsService(UserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
-    }
-
-    public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
-    }
 }

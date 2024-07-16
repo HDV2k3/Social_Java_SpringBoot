@@ -9,6 +9,7 @@ import com.example.socialmediaapp.Request.RegisterRequest;
 import com.example.socialmediaapp.Security.CustomAuthenticationToken;
 import com.example.socialmediaapp.Security.JwtUtil;
 import com.example.socialmediaapp.Service.UserService;
+import com.example.socialmediaapp.enums.Role;
 import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,6 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.HashSet;
 
 
 @RestController
@@ -54,6 +56,7 @@ public class AuthController {
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
         try {
             // Create a custom authentication token that includes IP and User-Agent
+
             CustomAuthenticationToken authToken = new CustomAuthenticationToken(
                     loginRequest.getEmail(),
                     loginRequest.getPassword(),
@@ -67,7 +70,8 @@ public class AuthController {
             return new ResponseEntity<>(jwtUtil.generateToken(
                     user.getEmail(),
                     user.getId(),
-                    user.getName() + " " + user.getLastName()
+                    user.getName() + " " + user.getLastName(),
+                    user.getRoles().toString()
             ), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -86,20 +90,22 @@ public class AuthController {
         user.setName(registerRequest.getName());
         user.setLastName(registerRequest.getLastName());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+
+        HashSet<String> role = new HashSet<>();
+        role.add(Role.USER.name());
+        user.setRoles(role);
         User savedUser = userRepository.save(user);
         userService.addUserLocation(savedUser, registerRequest.getIpAddress());
+
 
         return new ResponseEntity<>(jwtUtil.generateToken(
                 registerRequest.getEmail(),
                 userRepository.findByEmail(registerRequest.getEmail()).getId(),
-                registerRequest.getName() +" "+registerRequest.getLastName()
+                registerRequest.getName() +" "+registerRequest.getLastName(),registerRequest.getRole()
         )
                 ,HttpStatus.OK
         );
     }
-
-
-
     private final String getClientIP(HttpServletRequest request) {
         final String xfHeader = request.getHeader("X-Forwarded-For");
         if (xfHeader == null || xfHeader.isEmpty() || !xfHeader.contains(request.getRemoteAddr())) {
