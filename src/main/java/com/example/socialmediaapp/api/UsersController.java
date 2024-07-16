@@ -2,6 +2,7 @@ package com.example.socialmediaapp.api;
 
 import com.example.socialmediaapp.Models.User;
 import com.example.socialmediaapp.Request.UserAddRequest;
+import com.example.socialmediaapp.Responses.UserJwtResponse;
 import com.example.socialmediaapp.Responses.UserResponse;
 import com.example.socialmediaapp.Service.UserService;
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,6 +35,21 @@ public class UsersController {
 //        auth.getAuthorities().forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
 //        return new ResponseEntity<>(userService.getAll(),HttpStatus.OK);
 //    }
+@GetMapping("/me")
+public ResponseEntity<UserJwtResponse> getCurrentUser() {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    if (auth != null) {
+        String email = auth.getName(); // Email người dùng đăng nhập
+        UserJwtResponse userJwtResponse = userService.getUserInfo(email);
+        if (userJwtResponse != null) {
+            return ResponseEntity.ok(userJwtResponse);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    } else {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+    }
+}
 @GetMapping("/getall")
 public ResponseEntity<List<UserResponse>> getAll(){
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();

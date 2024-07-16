@@ -1,17 +1,17 @@
 package com.example.socialmediaapp.Service;
 
 
+import com.example.socialmediaapp.Exception.AppException;
+import com.example.socialmediaapp.Exception.ErrorCode;
 import com.example.socialmediaapp.Mappers.UserMapper;
-import com.example.socialmediaapp.Models.Follow;
-import com.example.socialmediaapp.Models.NewLocationToken;
-import com.example.socialmediaapp.Models.User;
-import com.example.socialmediaapp.Models.UserLocation;
+import com.example.socialmediaapp.Models.*;
 import com.example.socialmediaapp.Repository.FollowRepository;
 import com.example.socialmediaapp.Repository.NewLocationTokenRepository;
 import com.example.socialmediaapp.Repository.UserLocationRepository;
 import com.example.socialmediaapp.Repository.UserRepository;
 import com.example.socialmediaapp.Request.UserAddRequest;
 import com.example.socialmediaapp.Responses.UserFollowingResponse;
+import com.example.socialmediaapp.Responses.UserJwtResponse;
 import com.example.socialmediaapp.Responses.UserResponse;
 
 import com.maxmind.geoip2.DatabaseReader;
@@ -19,6 +19,7 @@ import com.maxmind.geoip2.DatabaseReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.env.Environment;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,7 @@ import java.net.InetAddress;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -83,7 +85,21 @@ public class UserService {
         User user = userMapper.requestToUser(userAddRequest);
         userRepository.save(user);
     }
+    public UserJwtResponse getUserInfo(String email) {
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            return null;
+        }
 
+        return new UserJwtResponse(
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                user.getRoles().stream().map(Role::getName).collect(Collectors.joining(",")),
+                null, // Token sẽ được xử lý trong một phần khác
+                true  // authenticated
+        );
+    }
     public void delete(int id){
         userRepository.deleteById(id);
     }

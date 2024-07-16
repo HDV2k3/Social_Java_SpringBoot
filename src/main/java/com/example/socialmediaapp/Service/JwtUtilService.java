@@ -16,6 +16,7 @@ import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.SignedJWT;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -54,9 +55,26 @@ public class JwtUtilService {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
-    private Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+//    private Claims extractAllClaims(String token) {
+//        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+//    }
+private Claims extractAllClaims(String token) {
+    System.out.println("Token received: " + token);
+
+    if (token == null || token.isEmpty() || !token.contains(".")) {
+        throw new IllegalArgumentException("Invalid JWT token: " + token);
     }
+
+    try {
+        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+    } catch (MalformedJwtException e) {
+        // Log the token causing the issue
+        System.out.println("Malformed JWT Token: " + token);
+        throw e; // Rethrow the exception to propagate it up the call stack
+    }
+}
+
+
 
     private Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
