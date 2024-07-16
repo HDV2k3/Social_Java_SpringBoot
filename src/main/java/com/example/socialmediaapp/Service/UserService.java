@@ -7,14 +7,15 @@ import com.example.socialmediaapp.Models.NewLocationToken;
 import com.example.socialmediaapp.Models.User;
 import com.example.socialmediaapp.Models.UserLocation;
 import com.example.socialmediaapp.Repository.FollowRepository;
+import com.example.socialmediaapp.Repository.NewLocationTokenRepository;
+import com.example.socialmediaapp.Repository.UserLocationRepository;
 import com.example.socialmediaapp.Repository.UserRepository;
 import com.example.socialmediaapp.Request.UserAddRequest;
 import com.example.socialmediaapp.Responses.UserFollowingResponse;
 import com.example.socialmediaapp.Responses.UserResponse;
-import com.example.socialmediaapp.persistence.NewLocationTokenRepository;
-import com.example.socialmediaapp.persistence.UserLocationRepository;
+
 import com.maxmind.geoip2.DatabaseReader;
-import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.env.Environment;
@@ -45,8 +46,6 @@ public class UserService {
     @Autowired
     @Qualifier("GeoIPCountry")
     private DatabaseReader databaseReader;
-
-
 
 
     @Autowired

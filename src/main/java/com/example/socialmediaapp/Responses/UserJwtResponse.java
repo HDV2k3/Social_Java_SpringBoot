@@ -13,4 +13,6 @@ public class UserJwtResponse {
     private String fullName;
     private String email;
     private String roles;
+    String token;
+    boolean authenticated;
 }

@@ -16,5 +16,5 @@ public class UserResponse {
     private String email;
     private List<UserFollowerResponse> followers;
     private List<UserFollowingResponse> following;
-    Set<String> roles;
+    Set<RoleResponse> roles;
 }
