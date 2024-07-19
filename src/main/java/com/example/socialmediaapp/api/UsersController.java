@@ -1,12 +1,14 @@
 package com.example.socialmediaapp.api;
 
 import com.example.socialmediaapp.Models.User;
+import com.example.socialmediaapp.Request.ApiResponse;
 import com.example.socialmediaapp.Request.UserAddRequest;
 import com.example.socialmediaapp.Responses.UserJwtResponse;
 import com.example.socialmediaapp.Responses.UserResponse;
 import com.example.socialmediaapp.Service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -22,19 +24,12 @@ import java.util.Optional;
 @RequestMapping("/api/users")
 public class UsersController {
     private static final Logger log = LoggerFactory.getLogger(UsersController.class);
+    @Autowired
     private final UserService userService;
 
     public UsersController(UserService userService) {
         this.userService = userService;
     }
-
-//    @GetMapping("/getall")
-//    public ResponseEntity<List<UserResponse>> getAll(){
-//        var auth = SecurityContextHolder.getContext().getAuthentication();
-//        log.info("Name: {}",auth.getName());
-//        auth.getAuthorities().forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
-//        return new ResponseEntity<>(userService.getAll(),HttpStatus.OK);
-//    }
 @GetMapping("/me")
 public ResponseEntity<UserJwtResponse> getCurrentUser() {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -50,6 +45,7 @@ public ResponseEntity<UserJwtResponse> getCurrentUser() {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
 }
+
 @GetMapping("/getall")
 public ResponseEntity<List<UserResponse>> getAll(){
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
