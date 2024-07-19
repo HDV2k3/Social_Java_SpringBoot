@@ -19,6 +19,7 @@ import com.maxmind.geoip2.DatabaseReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.env.Environment;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.stereotype.Service;
@@ -94,12 +95,14 @@ public class UserService {
         return new UserJwtResponse(
                 user.getId(),
                 user.getName(),
+                user.getLastName(),
                 user.getEmail(),
                 user.getRoles().stream().map(Role::getName).collect(Collectors.joining(",")),
                 null, // Token sẽ được xử lý trong một phần khác
                 true  // authenticated
         );
     }
+
     public void delete(int id){
         userRepository.deleteById(id);
     }

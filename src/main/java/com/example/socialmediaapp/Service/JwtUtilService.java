@@ -74,8 +74,6 @@ private Claims extractAllClaims(String token) {
     }
 }
 
-
-
     private Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
@@ -85,7 +83,7 @@ private Claims extractAllClaims(String token) {
         UserJwtResponse userJwtResponse = new UserJwtResponse();
         userJwtResponse.setId(userId);
         userJwtResponse.setEmail(username);
-        userJwtResponse.setFullName(fullName);
+        userJwtResponse.setLastName(fullName);
         userJwtResponse.setRoles(role);
         claims.put("user",userJwtResponse);
         return createToken(claims, username);
@@ -126,7 +124,7 @@ private Claims extractAllClaims(String token) {
         response.setToken(newToken);
         response.setId(user.getId());
         response.setEmail(user.getName());
-        response.setFullName(user.getLastName());
+        response.setLastName(user.getLastName());
         response.setRoles(user.getRoles().toString());
         return response;
     }
