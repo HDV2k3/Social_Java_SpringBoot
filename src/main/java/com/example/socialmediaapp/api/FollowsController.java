@@ -32,6 +32,7 @@ public class FollowsController {
         followService.delete(followRequest);
         return new ResponseEntity<>("Unfollowed",HttpStatus.OK);
     }
+    // get data friend
     @GetMapping("/mutual/{userId}")
     public ResponseEntity<List<FollowResponse>> getMutualFollowers(@PathVariable int userId) {
         List<FollowResponse> mutualFollowers = followService.getMutualFollowers(userId);

@@ -59,7 +59,6 @@ public class JwtUtilService {
 //        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
 //    }
 private Claims extractAllClaims(String token) {
-    System.out.println("Token received: " + token);
 
     if (token == null || token.isEmpty() || !token.contains(".")) {
         throw new IllegalArgumentException("Invalid JWT token: " + token);

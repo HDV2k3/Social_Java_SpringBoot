@@ -1,5 +1,6 @@
 package com.example.socialmediaapp.Security;
 
+import com.example.socialmediaapp.Exception.UnusualLocationException;
 import com.example.socialmediaapp.Models.NewLocationToken;
 import com.example.socialmediaapp.Service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
