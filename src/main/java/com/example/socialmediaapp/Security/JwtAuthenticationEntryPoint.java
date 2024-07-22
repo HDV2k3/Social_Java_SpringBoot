@@ -2,7 +2,7 @@ package com.example.socialmediaapp.Security;
 
 
 import com.example.socialmediaapp.Exception.ErrorCode;
-import com.example.socialmediaapp.Request.ApiResponse;
+import com.example.socialmediaapp.Responses.ApiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -10,7 +10,7 @@ import com.example.socialmediaapp.Models.User;
 import com.example.socialmediaapp.Repository.InvalidatedTokenRepository;
 import com.example.socialmediaapp.Repository.RoleRepository;
 import com.example.socialmediaapp.Repository.UserRepository;
-import com.example.socialmediaapp.Request.ApiResponse;
+import com.example.socialmediaapp.Responses.ApiResponse;
 import com.example.socialmediaapp.Request.LoginRequest;
 import com.example.socialmediaapp.Request.LogoutRequest;
 import com.example.socialmediaapp.Request.RegisterRequest;

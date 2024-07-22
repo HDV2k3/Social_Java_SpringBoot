@@ -1,4 +1,4 @@
-package com.example.socialmediaapp.Security;
+package com.example.socialmediaapp.Exception;
 
 import org.springframework.security.core.AuthenticationException;
 

@@ -4,11 +4,14 @@ package com.example.socialmediaapp.Security;
 import java.util.Locale;
 
 import com.example.socialmediaapp.Models.NewLocationToken;
+import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
+@Getter
 @SuppressWarnings("serial")
 public class OnDifferentLocationLoginEvent extends ApplicationEvent {
 
+    //
     private final Locale locale;
     private final String username;
     private final String ip;
@@ -24,27 +27,6 @@ public class OnDifferentLocationLoginEvent extends ApplicationEvent {
         this.ip = ip;
         this.token = token;
         this.appUrl = appUrl;
-    }
-
-    //
-    public Locale getLocale() {
-        return locale;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getIp() {
-        return ip;
-    }
-
-    public NewLocationToken getToken() {
-        return token;
-    }
-
-    public String getAppUrl() {
-        return appUrl;
     }
 
 }
