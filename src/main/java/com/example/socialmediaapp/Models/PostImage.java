@@ -16,6 +16,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "post_image")
 public class PostImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,9 +28,10 @@ public class PostImage {
 
     @Column(name = "type")
     private String type;
-
+    @Column(name = "url_image_post",columnDefinition = "VARBINARY",length = 1000)
+    private String urlImagePost;
     @Lob
-    @Column(name = "data", columnDefinition = "LONGBLOB")
+    @Column(name = "data",columnDefinition = "VARBINARY",length = 1000)
     private byte[] data;
     @NotNull
     @ManyToOne
