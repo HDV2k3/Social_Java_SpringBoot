@@ -7,6 +7,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Setter
@@ -25,12 +28,19 @@ public class Post {
     @ManyToOne
     @JoinColumn(name = "user_id")
     User user;
-
+    @Column(name = "titlePost")
+    private String titlePost;
+    @Column(name = "urlImagePost",columnDefinition = "VARBINARY",length = 1000)
+    @ElementCollection
+    private List<String> urlImagePost;
+    @Column(name = "create_at")
+    private Date create_at;
     @OneToMany(mappedBy = "post",cascade = CascadeType.ALL)
     Set<Like> likes;
 
-    @OneToMany(mappedBy = "post",cascade = CascadeType.ALL)
-    Set<PostImage> postImages;
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<PostImage> postImages = new HashSet<>();
+
 
     @OneToMany(mappedBy = "post",cascade = CascadeType.ALL)
     Set<Comment> comments;

@@ -14,8 +14,8 @@ import java.util.List;
 public interface PostMapper {
 
     @Mapping(source = "user.id",target = "userId")
-    @Mapping(source = "user.lastName",target = "userLastName")
-    @Mapping(source = "user.name",target = "userName")
+    @Mapping(source = "user.lastName",target = "lastName")
+    @Mapping(source = "user.name",target = "firstName")
     PostGetResponse postToGetResponse(Post post);
 
     @Mapping(source = "userId",target = "user.id")

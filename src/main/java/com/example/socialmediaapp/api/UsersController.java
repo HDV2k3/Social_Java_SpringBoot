@@ -130,15 +130,15 @@ public ResponseEntity<List<UserResponse>> getAll(){
     }
     @GetMapping("/{userId}/profile-image")
     public ResponseEntity<ApiResponse<String>> getProfileImage(@PathVariable int userId) {
-        log.info("Fetching profile image for user ID: {}", userId);
+//        log.info("Fetching profile image for user ID: {}", userId);
         try {
             UserImage userImage = userImageRepository.findByUser_Id(userId)
                     .orElseThrow(() -> new RuntimeException("Profile image not found for user: " + userId));
 
-            log.info("Found user image record: {}", userImage.getName());
+//            log.info("Found user image record: {}", userImage.getName());
 
             String signedUrl = firebaseStorageService.getSignedUrl(userImage.getName());
-            log.info("Generated signed URL: {}", signedUrl);
+//            log.info("Generated signed URL: {}", signedUrl);
 
             return new ResponseEntity<>(new ApiResponse<>(signedUrl, true), HttpStatus.OK);
         } catch (RuntimeException e) {

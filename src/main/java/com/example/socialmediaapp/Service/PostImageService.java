@@ -26,15 +26,15 @@ public class PostImageService {
         this.postImageMapper = postImageMapper;
     }
 
-    public PostImageResponse upload(MultipartFile file, int postId) throws IOException {
-        PostImage postImage = new PostImage();
-        postImage.setName(file.getOriginalFilename());
-        postImage.setType(file.getContentType());
-        postImage.setData(ImageUtil.compressImage(file.getBytes()));
-        postImage.setPost(postService.getById(postId));
-        postImageRepository.save(postImage);
-        return postImageMapper.imageToResponse(postImage);
-    }
+//    public PostImageResponse upload(MultipartFile file, int postId) throws IOException {
+//        PostImage postImage = new PostImage();
+//        postImage.setName(file.getOriginalFilename());
+//        postImage.setType(file.getContentType());
+//        postImage.setData(ImageUtil.compressImage(file.getBytes()));
+//        postImage.setPost(postService.getById(postId));
+//        postImageRepository.save(postImage);
+//        return postImageMapper.imageToResponse(postImage);
+//    }
 
     public byte[] download(int id){
         Optional<PostImage> postImage = postImageRepository.findPostImageByPost_Id(id);
