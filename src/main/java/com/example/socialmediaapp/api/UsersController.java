@@ -1,5 +1,6 @@
 package com.example.socialmediaapp.api;
 
+import com.example.socialmediaapp.Contants.URL_BUCKET_NAME;
 import com.example.socialmediaapp.Models.User;
 import com.example.socialmediaapp.Models.UserImage;
 import com.example.socialmediaapp.Repository.UserImageRepository;
@@ -9,6 +10,7 @@ import com.example.socialmediaapp.Responses.ApiResponse;
 import com.example.socialmediaapp.Responses.UserJwtResponse;
 import com.example.socialmediaapp.Responses.UserResponse;
 import com.example.socialmediaapp.Service.FirebaseStorageService;
+import com.example.socialmediaapp.Service.StorageService;
 import com.example.socialmediaapp.Service.UserService;
 import org.apache.sshd.common.global.GlobalRequestException;
 import org.slf4j.Logger;
@@ -36,8 +38,10 @@ public class UsersController {
     private FirebaseStorageService firebaseStorageService;
     @Autowired
     private UserImageRepository userImageRepository;
-    public UsersController(UserService userService) {
+    private final StorageService storageService;
+    public UsersController(UserService userService, StorageService storageService) {
         this.userService = userService;
+        this.storageService = storageService;
     }
     @Autowired
     private UserRepository userRepository;
@@ -113,7 +117,7 @@ public ResponseEntity<List<UserResponse>> getAll(){
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
-            String imageUrl = firebaseStorageService.uploadFile(file);
+            String imageUrl = storageService.uploadFile(URL_BUCKET_NAME.BUCKET_NAME,URL_BUCKET_NAME.AVATAR_FOLDER,file);
 
             UserImage userImage = new UserImage();
             userImage.setName(file.getOriginalFilename());
@@ -128,26 +132,36 @@ public ResponseEntity<List<UserResponse>> getAll(){
             throw new RuntimeException("Failed to upload profile image: " + e.getMessage());
         }
     }
-    @GetMapping("/{userId}/profile-image")
-    public ResponseEntity<ApiResponse<String>> getProfileImage(@PathVariable int userId) {
-//        log.info("Fetching profile image for user ID: {}", userId);
-        try {
-            UserImage userImage = userImageRepository.findByUser_Id(userId)
-                    .orElseThrow(() -> new RuntimeException("Profile image not found for user: " + userId));
 
-//            log.info("Found user image record: {}", userImage.getName());
+@GetMapping("/{userId}/profile-image")
+public ResponseEntity<ApiResponse<String>> getProfileImage(@PathVariable int userId) {
+//    log.info("Fetching profile image for user ID: {}", userId);
+    try {
+        UserImage userImage = userImageRepository.findByUser_Id(userId)
+                .orElseThrow(() -> new RuntimeException("Profile image not found for user: " + userId));
 
-            String signedUrl = firebaseStorageService.getSignedUrl(userImage.getName());
-//            log.info("Generated signed URL: {}", signedUrl);
+//        log.info("Found user image record: {}", userImage.getUrl());
 
-            return new ResponseEntity<>(new ApiResponse<>(signedUrl, true), HttpStatus.OK);
-        } catch (RuntimeException e) {
-            log.error("Runtime error fetching profile image for user {}: {}", userId, e.getMessage());
-            return new ResponseEntity<>(new ApiResponse<>(e.getMessage(), false), HttpStatus.NOT_FOUND);
-        } catch (IOException e) {
-            log.error("IO error fetching profile image for user {}: {}", userId, e.getMessage());
-            return new ResponseEntity<>(new ApiResponse<>("Error accessing the image file: " + e.getMessage(), false), HttpStatus.INTERNAL_SERVER_ERROR);
+        // Construct the full path to the image in Firebase Storage
+        String fullPath = URL_BUCKET_NAME.AVATAR_FOLDER + userImage.getUrl();
+
+        // Get a signed URL for the image
+        String signedUrl = storageService.getSignedUrl(URL_BUCKET_NAME.BUCKET_NAME, fullPath);
+
+        if (signedUrl == null) {
+            log.error("Failed to generate signed URL for image: {}", fullPath);
+            return new ResponseEntity<>(new ApiResponse<>("Failed to retrieve image URL", false), HttpStatus.NOT_FOUND);
         }
-    }
 
+//        log.info("Generated signed URL for user {}: {}", userId, signedUrl);
+
+        return new ResponseEntity<>(new ApiResponse<>(signedUrl, true), HttpStatus.OK);
+    } catch (RuntimeException e) {
+        log.error("Error fetching profile image for user {}: {}", userId, e.getMessage());
+        return new ResponseEntity<>(new ApiResponse<>(e.getMessage(), false), HttpStatus.NOT_FOUND);
+    } catch (IOException e) {
+        log.error("IO error fetching profile image for user {}: {}", userId, e.getMessage());
+        return new ResponseEntity<>(new ApiResponse<>("Error accessing the image file: " + e.getMessage(), false), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+}
 }

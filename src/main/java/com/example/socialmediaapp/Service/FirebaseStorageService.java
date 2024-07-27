@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -23,7 +24,6 @@ public class FirebaseStorageService {
 
         return blob.getName(); // Return the full file name (UUID + original name)
     }
-
     public String getSignedUrl(String storedFileName) throws IOException {
         Storage storage = StorageClient.getInstance().bucket().getStorage();
 

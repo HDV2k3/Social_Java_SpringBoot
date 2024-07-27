@@ -2,6 +2,7 @@ package com.example.socialmediaapp.api;
 
 
 
+import com.example.socialmediaapp.Contants.URL_BUCKET_NAME;
 import com.example.socialmediaapp.Models.Post;
 import com.example.socialmediaapp.Models.PostImage;
 import com.example.socialmediaapp.Models.User;
@@ -12,6 +13,7 @@ import com.example.socialmediaapp.Responses.ApiResponse;
 import com.example.socialmediaapp.Responses.PostGetResponse;
 import com.example.socialmediaapp.Service.FirebaseStorageService;
 import com.example.socialmediaapp.Service.PostService;
+import com.example.socialmediaapp.Service.StorageService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,12 +29,13 @@ public class PostsController {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final FirebaseStorageService firebaseStorageService;
-
-    public PostsController(PostService postService, PostRepository postRepository, UserRepository userRepository, FirebaseStorageService firebaseStorageService) {
+    private final StorageService storageService;
+    public PostsController(PostService postService, PostRepository postRepository, UserRepository userRepository, FirebaseStorageService firebaseStorageService, StorageService storageService) {
         this.postService = postService;
         this.postRepository = postRepository;
         this.userRepository = userRepository;
         this.firebaseStorageService = firebaseStorageService;
+        this.storageService = storageService;
     }
 
 
@@ -46,59 +49,54 @@ public class PostsController {
         return new ResponseEntity<>(postService.getResponseById(id),HttpStatus.OK);
     }
 
-    @GetMapping("/getallbyuser/{userId}")
-    public ResponseEntity<List<PostGetResponse>> getAllByUser(@PathVariable int userId){
-        return new ResponseEntity<>(postService.getAllByUser(userId),HttpStatus.OK);
-    }
 
+@GetMapping("/getallbyuser/{userId}")
+public ResponseEntity<List<PostGetResponse>> getPostsByUserId(@PathVariable int userId) {
+    List<PostGetResponse> posts = postService.getPostsByUserId(userId);
+    return ResponseEntity.ok(posts);
+}
     @GetMapping("/getbyuserfollowing/{userId}")
     public ResponseEntity<List<PostGetResponse>> getAllByUserFollowing(@PathVariable int userId){
         return new ResponseEntity<>(postService.getByUserFollowing(userId),HttpStatus.OK);
     }
 
-//    @PostMapping("/add")
-//    public ResponseEntity<Integer> add(@RequestBody PostAddRequest postAddRequest){
-//        int postId = postService.add(postAddRequest);
-//        return new ResponseEntity<>(postId,HttpStatus.CREATED);
-//    }
+@PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+public ResponseEntity<ApiResponse<Void>> addPost(
+        @RequestPart("post") PostAddRequest postAddRequest,
+        @RequestPart(value = "files", required = false) List<MultipartFile> files) throws IOException {
+    // Lấy thông tin user từ userId
+    User user = userRepository.findById(postAddRequest.getUserId())
+            .orElseThrow(() -> new RuntimeException("User not found"));
+    Post post = new Post();
+    post.setDescription(postAddRequest.getContentPost());
+    post.setTitlePost(postAddRequest.getTitlePost());
+    post.setUrlImagePost(postAddRequest.getUrlImagePost());
+    post.setCreate_at(new Date());
+    post.setUser(user);
 
-    @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<Void>> addPost(
-            @RequestPart("post") PostAddRequest postAddRequest,
-            @RequestPart(value = "files", required = false) List<MultipartFile> files) throws IOException {
-        // Lấy thông tin user từ userId
-        User user = userRepository.findById(postAddRequest.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        Post post = new Post();
-        post.setDescription(postAddRequest.getContentPost());
-        post.setTitlePost(postAddRequest.getTitlePost());
-        post.setUrlImagePost(postAddRequest.getUrlImagePost());
-        post.setCreate_at(new Date());
-        post.setUser(user);
-        // Lưu các tệp hình ảnh nếu có
-        if (files != null) {
-            Set<PostImage> postImages = new HashSet<>();
-            for (MultipartFile file : files) {
-                String storedFileName = firebaseStorageService.uploadFile(file);
-                String imageUrl = firebaseStorageService.getSignedUrl(storedFileName);
+    // Lưu các tệp hình ảnh nếu có
+    if (files != null) {
+        Set<PostImage> postImages = new HashSet<>();
+        for (MultipartFile file : files) {
+            String storedFileName = storageService.uploadFile(URL_BUCKET_NAME.BUCKET_NAME, URL_BUCKET_NAME.POST_FOLDER, file);
+            PostImage postImage = new PostImage();
 
-                PostImage postImage = new PostImage();
-                postImage.setData(imageUrl.getBytes());
-                postImage.setUrlImagePost(imageUrl);
-                postImage.setPost(post);
-                String contentType = file.getContentType();
-                postImage.setType(contentType != null ? contentType : "unknown");
-                postImages.add(postImage);
-                postImage.setName(storedFileName);
-            }
-            post.setPostImages(postImages);
+            postImage.setData(storedFileName.getBytes());
+            postImage.setUrlImagePost(storedFileName);
+            postImage.setPost(post);
+            String contentType = file.getContentType();
+            postImage.setType(contentType != null ? contentType : "unknown");
+            postImages.add(postImage);
+            postImage.setName(file.getOriginalFilename());
         }
-
-        // Lưu thông tin bài đăng vào cơ sở dữ liệu
-        postRepository.save(post);
-
-        return ResponseEntity.ok(new ApiResponse<>("Post added successfully", true));
+        post.setPostImages(postImages);
     }
+
+    // Lưu thông tin bài đăng vào cơ sở dữ liệu
+    postRepository.save(post);
+
+    return ResponseEntity.ok(new ApiResponse<>("Post added successfully", true));
+}
 
 
 
