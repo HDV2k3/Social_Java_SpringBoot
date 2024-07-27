@@ -17,7 +17,7 @@ import com.example.socialmediaapp.Request.RegisterRequest;
 import com.example.socialmediaapp.Security.CustomAuthenticationToken;
 import com.example.socialmediaapp.Service.JwtUtilService;
 import com.example.socialmediaapp.Service.UserService;
-import com.example.socialmediaapp.constant.PredefinedRole;
+import com.example.socialmediaapp.Contants.PredefinedRole;
 
 import com.nimbusds.jose.JOSEException;
 import jakarta.servlet.http.HttpServletRequest;

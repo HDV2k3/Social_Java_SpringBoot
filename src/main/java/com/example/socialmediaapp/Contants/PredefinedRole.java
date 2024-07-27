@@ -1,4 +1,4 @@
-package com.example.socialmediaapp.constant;
+package com.example.socialmediaapp.Contants;
 
 public class PredefinedRole {
     public static final String USER_ROLE = "USER";

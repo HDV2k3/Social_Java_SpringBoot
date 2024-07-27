@@ -1,6 +1,7 @@
 package com.example.socialmediaapp.Responses;
 
 
+import com.example.socialmediaapp.Models.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
