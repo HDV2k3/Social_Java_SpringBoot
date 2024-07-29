@@ -1,5 +1,6 @@
 package com.example.socialmediaapp.Models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,9 +32,11 @@ public class Chat {
     private String senderEncryptedMessage;
 
     @Column(name = "sent_at", nullable = false)
+
     private LocalDateTime sentAt;
 
     @Column(name = "created_at", nullable = false)
+
     private LocalDateTime createAt;
 
     @Enumerated(EnumType.STRING)
@@ -51,9 +54,11 @@ public class Chat {
     private MessageStatus status;
 
     @Column(name = "delivered_at")
+
     private LocalDateTime deliveredAt;
 
     @Column(name = "read_at")
+
     private LocalDateTime readAt;
 }
 

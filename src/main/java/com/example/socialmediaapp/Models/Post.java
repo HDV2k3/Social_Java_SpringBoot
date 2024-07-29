@@ -1,12 +1,14 @@
 package com.example.socialmediaapp.Models;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -34,7 +36,7 @@ public class Post {
     @ElementCollection
     private List<String> urlImagePost;
     @Column(name = "create_at")
-    private Date create_at;
+    private LocalDateTime create_at;
     @OneToMany(mappedBy = "post",cascade = CascadeType.ALL)
     Set<Like> likes;
 
@@ -43,5 +45,6 @@ public class Post {
 
 
     @OneToMany(mappedBy = "post",cascade = CascadeType.ALL)
+    @JsonManagedReference
     Set<Comment> comments;
 }
