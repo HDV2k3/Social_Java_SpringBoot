@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Array;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -23,6 +24,8 @@ public class PostGetResponse {
     private String contentPost;
     private String titlePost;
     private List<String> urlImagePost;
-    private Date create_at;
+    private LocalDateTime create_at;
+    private String avatar;
+
 }
 

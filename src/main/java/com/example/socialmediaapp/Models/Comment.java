@@ -1,12 +1,16 @@
 package com.example.socialmediaapp.Models;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalDateTime;
+import java.util.Date;
 
 
 @Entity
@@ -26,9 +30,11 @@ public class Comment {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "post_id")
+    @JsonBackReference
     Post post;
     @NotNull
     @ManyToOne
     @JoinColumn(name = "user_id")
     User user;
+    private LocalDateTime create_at;
 }

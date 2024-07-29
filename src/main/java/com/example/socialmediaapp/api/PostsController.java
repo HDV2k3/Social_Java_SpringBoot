@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
@@ -39,27 +40,21 @@ public class PostsController {
     }
 
 
-    @GetMapping("/getall")
-    public ResponseEntity<List<PostGetResponse>> getAll(){
-        return new ResponseEntity<>(postService.getAll(), HttpStatus.OK);
-    }
-
-    @GetMapping("/getbyid/{id}")
-    public ResponseEntity<PostGetResponse> getById(@PathVariable int id){
-        return new ResponseEntity<>(postService.getResponseById(id),HttpStatus.OK);
-    }
-
-
-@GetMapping("/getallbyuser/{userId}")
-public ResponseEntity<List<PostGetResponse>> getPostsByUserId(@PathVariable int userId) {
+    //main
+    @GetMapping("/getallbyuser/{userId}")
+    public ResponseEntity<List<PostGetResponse>> getPostsByUserId(@PathVariable int userId) {
     List<PostGetResponse> posts = postService.getPostsByUserId(userId);
     return ResponseEntity.ok(posts);
-}
-    @GetMapping("/getbyuserfollowing/{userId}")
-    public ResponseEntity<List<PostGetResponse>> getAllByUserFollowing(@PathVariable int userId){
-        return new ResponseEntity<>(postService.getByUserFollowing(userId),HttpStatus.OK);
     }
 
+    //main
+    @GetMapping("/post-of-followed/{userId}")
+    public ResponseEntity<List<PostGetResponse>> getPostsByFollowedUsers(@PathVariable int userId) {
+        List<PostGetResponse> posts = postService.getPostsByFollowedUsers(userId);
+        return ResponseEntity.ok(posts);
+    }
+
+    //main
 @PostMapping(value = "/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 public ResponseEntity<ApiResponse<Void>> addPost(
         @RequestPart("post") PostAddRequest postAddRequest,
@@ -71,7 +66,7 @@ public ResponseEntity<ApiResponse<Void>> addPost(
     post.setDescription(postAddRequest.getContentPost());
     post.setTitlePost(postAddRequest.getTitlePost());
     post.setUrlImagePost(postAddRequest.getUrlImagePost());
-    post.setCreate_at(new Date());
+    post.setCreate_at(LocalDateTime.now());
     post.setUser(user);
 
     // Lưu các tệp hình ảnh nếu có

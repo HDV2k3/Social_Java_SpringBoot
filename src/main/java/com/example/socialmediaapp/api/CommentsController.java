@@ -1,8 +1,11 @@
 package com.example.socialmediaapp.api;
 
 
+import com.example.socialmediaapp.Models.Comment;
 import com.example.socialmediaapp.Request.CommentAddRequest;
+import com.example.socialmediaapp.Responses.ApiResponse;
 import com.example.socialmediaapp.Responses.CommentGetResponse;
+import com.example.socialmediaapp.Responses.PostGetResponse;
 import com.example.socialmediaapp.Service.CommentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,30 +24,15 @@ public class CommentsController {
         this.commentService = commentService;
     }
 
-    @GetMapping("/getall")
-    public ResponseEntity<List<CommentGetResponse>> getAll(){
-        return new ResponseEntity<>(commentService.getAll(), HttpStatus.OK);
-    }
-
-    @GetMapping("/getallbypost/{postId}")
-    public ResponseEntity<List<CommentGetResponse>> getAllByPost(@PathVariable int postId){
-        return new ResponseEntity<>(commentService.getAllByPost(postId),HttpStatus.OK);
-    }
-
-    @GetMapping("/getallbyuser/{userId}")
-    public ResponseEntity<List<CommentGetResponse>> getAllByUser(@PathVariable int userId){
-        return new ResponseEntity<>(commentService.getAllByUser(userId),HttpStatus.OK);
-    }
-
     @PostMapping("/add")
-    public ResponseEntity<String> add(@RequestBody CommentAddRequest commentAddRequest){
-        commentService.add(commentAddRequest);
-        return new ResponseEntity<>("Added",HttpStatus.CREATED);
+    public  ResponseEntity<ApiResponse<Void>> addComment(@RequestBody CommentAddRequest request) {
+             commentService.addComment(request);
+        return ResponseEntity.ok(new ApiResponse<>("Comment added successfully", true));
     }
+    @GetMapping("/post/{postId}")
+    public ResponseEntity<List<CommentGetResponse>> getCommentsByPostId(@PathVariable int postId) {
+        List<CommentGetResponse> comments = commentService.getCommentsByPostId(postId);
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<String> delete(@RequestParam int id){
-        commentService.delete(id);
-        return new ResponseEntity<>("Deleted",HttpStatus.OK);
+        return ResponseEntity.ok(comments);
     }
 }
