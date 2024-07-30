@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public  class CommentService {
+public class CommentService {
 
     private final CommentRepository commentRepository;
 
@@ -28,6 +28,7 @@ public  class CommentService {
     private final PostRepository postRepository;
     private final UserImageRepository userImageRepository;
     private final StorageService storageService;
+
     public CommentService(CommentRepository commentRepository, PostRepository postRepository, UserImageRepository userImageRepository, StorageService storageService, UserRepository userRepository) {
         this.commentRepository = commentRepository;
         this.postRepository = postRepository;
@@ -37,6 +38,7 @@ public  class CommentService {
     }
 
     private final UserRepository userRepository;
+
     // add comment
     public void addComment(CommentAddRequest request) {
         Post post = postRepository.findById(request.getPostId())
@@ -50,6 +52,7 @@ public  class CommentService {
         comment.setCreate_at(LocalDateTime.now());
         commentRepository.save(comment);
     }
+
     // get all comment -> postId
     public List<CommentGetResponse> getCommentsByPostId(int commentId) {
 
@@ -69,17 +72,17 @@ public  class CommentService {
                         throw new RuntimeException(e);
                     }
 
-                return new CommentGetResponse(
-                        comment.getId(),
-                        comment.getPost().getId(),
-                        comment.getUser().getId(),
-                        comment.getUser().getName(),
-                        comment.getUser().getLastName(),
-                        avatar,
-                        comment.getDescription(),
-                        comment.getCreate_at()
+                    return new CommentGetResponse(
+                            comment.getId(),
+                            comment.getPost().getId(),
+                            comment.getUser().getId(),
+                            comment.getUser().getName(),
+                            comment.getUser().getLastName(),
+                            avatar,
+                            comment.getDescription(),
+                            comment.getCreate_at()
 
-                );
+                    );
                 }).collect(Collectors.toList());
     }
 }
