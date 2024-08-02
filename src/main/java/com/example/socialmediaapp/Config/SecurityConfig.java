@@ -84,15 +84,15 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers( "/ws/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/postimages/**").permitAll()
-//                        .requestMatchers(HttpMethod.GET,"/api/users/**").hasAuthority("ROLE_ADMIN")
-//                                .requestMatchers(HttpMethod.GET,"/api/users/**").hasRole(Role.ADMIN.name())
+                        .requestMatchers("/api/encryption/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authProvider())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
+    //                        .requestMatchers(HttpMethod.GET,"/api/users/**").hasAuthority("ROLE_ADMIN")
+//                                .requestMatchers(HttpMethod.GET,"/api/users/**").hasRole(Role.ADMIN.name())
     @Bean
     public AuthenticationManager authManager(HttpSecurity http) throws Exception {
         return http.getSharedObject(AuthenticationManagerBuilder.class)

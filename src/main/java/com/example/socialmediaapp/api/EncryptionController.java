@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/encryption")
+@CrossOrigin(origins = "http://localhost:3000")
 public class EncryptionController {
     @Autowired
     private UserRepository userRepository;
