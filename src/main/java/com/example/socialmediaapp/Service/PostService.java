@@ -1,4 +1,5 @@
 package com.example.socialmediaapp.Service;
+
 import com.example.socialmediaapp.Contants.URL_BUCKET_NAME;
 import com.example.socialmediaapp.Mappers.PostMapper;
 import com.example.socialmediaapp.Models.Follow;
@@ -9,17 +10,17 @@ import com.example.socialmediaapp.Repository.FollowRepository;
 import com.example.socialmediaapp.Repository.PostRepository;
 import com.example.socialmediaapp.Repository.UserImageRepository;
 import com.example.socialmediaapp.Repository.UserRepository;
-import com.example.socialmediaapp.Request.PostAddRequest;
 import com.example.socialmediaapp.Responses.PostGetResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+
 @Service
 public class PostService {
     private final PostRepository postRepository;
-    private final PostMapper postMapper;
 
     private final UserRepository userRepository;
     private final StorageService storageService;
@@ -29,15 +30,11 @@ public class PostService {
     @Autowired
     public PostService(PostRepository postRepository, PostMapper postMapper, UserRepository userRepository, StorageService storageService, FollowRepository followRepository, UserImageRepository userImageRepository) {
         this.postRepository = postRepository;
-        this.postMapper = postMapper;
         this.userRepository = userRepository;
         this.storageService = storageService;
         this.followRepository = followRepository;
         this.userImageRepository = userImageRepository;
     }
-
-
-
 
 
     public void delete(int id) {
