@@ -36,7 +36,12 @@ public class User {
     private String password;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Follow> following;
-
+    //    //{ xác thuc account
+//    @Column(nullable = false)
+//    private boolean enabled;
+//
+//    private String verificationToken;
+//    // }
     @OneToMany(mappedBy = "following", cascade = CascadeType.ALL)
     private Set<Follow> followers;
 
