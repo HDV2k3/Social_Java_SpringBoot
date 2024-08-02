@@ -38,11 +38,7 @@ public class PostService {
 
 
 
-    public int add(PostAddRequest postAddRequest) {
-        Post post = postMapper.postAddRequestToPost(postAddRequest);
-        postRepository.save(post);
-        return post.getId();
-    }
+
 
     public void delete(int id) {
         postRepository.deleteById(id);
