@@ -1,5 +1,6 @@
 
 package com.example.socialmediaapp.Models;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -24,24 +25,34 @@ public class User {
     @NotNull
     @Column(name = "name")
     private String name;
-    @NotNull
-    @Column(name = "email")
-    @Email
-    private String email;
+
     @NotNull
     @Column(name = "last_name")
     private String lastName;
-    @NotNull
-    @Column(name = "password")
+
+    //    @NotNull
+//    @Column(name = "email")
+//    @Email
+//    private String email;
+//
+//    @NotNull
+//    @Column(name = "password")
+//    private String password;
+    //{ Verify account
+    @Column(nullable = false, unique = true)
+    private String email;
+
+    @Column(nullable = false)
     private String password;
+
+    @Column(nullable = false)
+    private boolean enabled;
+
+    private String verificationToken;
+    //}
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Follow> following;
-    //    //{ xác thuc account
-//    @Column(nullable = false)
-//    private boolean enabled;
-//
-//    private String verificationToken;
-//    // }
+
     @OneToMany(mappedBy = "following", cascade = CascadeType.ALL)
     private Set<Follow> followers;
 

@@ -57,6 +57,8 @@ public class UserService {
     @Autowired
     private Environment env;
 
+
+
     public List<UserResponse> getAll(){
 
         return userMapper.usersToResponses(userRepository.findAll());
@@ -178,8 +180,30 @@ public class UserService {
                 .toString(), loc);
         return newLocationTokenRepository.save(token);
     }
+    public String getEmailByToken(String token) {
+        User user = userRepository.findByVerificationToken(token).orElse(null);
+        if (user != null) {
+            return user.getEmail();
+        } else {
+            throw new RuntimeException("Invalid token");
+        }
+    }
 
+    public String validateVerificationToken(String token) {
+        User user = userRepository.findByVerificationToken(token).orElse(null);
+        if (user == null) {
+            return "invalid";
+        }
 
+        user.setEnabled(true);
+        userRepository.save(user);
+        return "valid";
+    }
+    public User findUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
 
-
+    public void save(User user) {
+        userRepository.save(user);
+    }
 }
