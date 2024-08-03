@@ -60,7 +60,7 @@ public class JwtUtilService {
 //    }
 private Claims extractAllClaims(String token) {
 
-    if (token == null || token.isEmpty() || !token.contains(".")) {
+    if (token == null || !token.contains(".")) {
         throw new IllegalArgumentException("Invalid JWT token: " + token);
     }
 

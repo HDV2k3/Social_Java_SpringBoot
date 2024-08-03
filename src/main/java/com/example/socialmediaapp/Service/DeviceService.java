@@ -35,14 +35,11 @@ public class DeviceService {
 
     private static final String UNKNOWN = "UNKNOWN";
 
-    private String from = "dacviethuynh@gmail.com";
-
-    private DeviceMetadataRepository deviceMetadataRepository;
-    private UserRepository userRepository;
-    private DatabaseReader databaseReader;
-    private Parser parser;
-    private JavaMailSender mailSender;
-    private Environment env;
+    private final DeviceMetadataRepository deviceMetadataRepository;
+    private final DatabaseReader databaseReader;
+    private final Parser parser;
+    private final JavaMailSender mailSender;
+    private final Environment env;
 
     public DeviceService(DeviceMetadataRepository deviceMetadataRepository,
                          @Qualifier("GeoIPCity") DatabaseReader databaseReader,
@@ -56,7 +53,6 @@ public class DeviceService {
         this.parser = parser;
         this.mailSender = mailSender;
         this.env = env;
-        this.userRepository = userRepository;
     }
 
     public void verifyDevice(UserDetails user, User user1, String ipAddress, String userAgent) throws IOException, GeoIp2Exception {
@@ -170,6 +166,7 @@ public class DeviceService {
         );
 
         notification.setText(text);
+        String from = "dacviethuynh@gmail.com";
         notification.setFrom(from);
         mailSender.send(notification);
     }

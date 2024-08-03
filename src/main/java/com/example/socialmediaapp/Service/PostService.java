@@ -2,19 +2,19 @@ package com.example.socialmediaapp.Service;
 
 import com.example.socialmediaapp.Contants.URL_BUCKET_NAME;
 import com.example.socialmediaapp.Mappers.PostMapper;
-import com.example.socialmediaapp.Models.Follow;
-import com.example.socialmediaapp.Models.Post;
-import com.example.socialmediaapp.Models.User;
-import com.example.socialmediaapp.Models.UserImage;
+import com.example.socialmediaapp.Models.*;
 import com.example.socialmediaapp.Repository.FollowRepository;
 import com.example.socialmediaapp.Repository.PostRepository;
 import com.example.socialmediaapp.Repository.UserImageRepository;
 import com.example.socialmediaapp.Repository.UserRepository;
+import com.example.socialmediaapp.Request.PostAddRequest;
 import com.example.socialmediaapp.Responses.PostGetResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,7 +40,34 @@ public class PostService {
     public void delete(int id) {
         postRepository.deleteById(id);
     }
+    public void addPost(PostAddRequest postAddRequest, List<MultipartFile> files) throws IOException {
+        User user = userRepository.findById(postAddRequest.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
+        Post post = new Post();
+        post.setDescription(postAddRequest.getContentPost());
+        post.setTitlePost(postAddRequest.getTitlePost());
+        post.setUrlImagePost(postAddRequest.getUrlImagePost());
+        post.setCreate_at(LocalDateTime.now());
+        post.setUser(user);
+
+        if (files != null) {
+            Set<PostImage> postImages = new HashSet<>();
+            for (MultipartFile file : files) {
+                String storedFileName = storageService.uploadFile(URL_BUCKET_NAME.BUCKET_NAME, URL_BUCKET_NAME.POST_FOLDER, file);
+                PostImage postImage = new PostImage();
+                postImage.setData(storedFileName.getBytes());
+                postImage.setUrlImagePost(storedFileName);
+                postImage.setPost(post);
+                postImage.setType(file.getContentType() != null ? file.getContentType() : "unknown");
+                postImage.setName(file.getOriginalFilename());
+                postImages.add(postImage);
+            }
+            post.setPostImages(postImages);
+        }
+
+        postRepository.save(post);
+    }
     // lay cac bai post cua cac friend
     public List<PostGetResponse> getPostsByFollowedUsers(int currentUserId) {
         // Get the list of users that the current user is following

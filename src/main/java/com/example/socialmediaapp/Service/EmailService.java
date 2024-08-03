@@ -14,15 +14,9 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
-    public void sendEmail(String to, String subject, String text) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(text);
-        mailSender.send(message);
-    }
-
-    public void sendVerificationEmail(String to, String verificationUrl) throws MessagingException {
+    @Autowired
+    private UserService userService;
+    public void sendVerificationEmail(String to,String name,String lastname, String verificationUrl) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
@@ -52,7 +46,7 @@ public class EmailService {
                 + "<h1>Email Verification</h1>"
                 + "</div>"
                 + "<div class=\"body\">"
-                + "<p>Hello,</p>"
+                + "<p>Hello " + name + lastname +  ",</p>"
                 + "<p>Thank you for registering with us. Please click the button below to verify your email address:</p>"
                 + "<a href=\"" + verificationUrl + "\" target=\"_blank\">Verify Email</a>"
                 + "<p>If you did not create an account, no further action is required.</p>"
@@ -71,5 +65,4 @@ public class EmailService {
 
         mailSender.send(message);
     }
-
 }

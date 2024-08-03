@@ -26,4 +26,5 @@ public class VerificationTokenService {
         userRepository.save(user);
         return "valid";
     }
+
 }

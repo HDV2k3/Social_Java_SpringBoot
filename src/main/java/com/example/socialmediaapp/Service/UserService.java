@@ -1,14 +1,12 @@
 package com.example.socialmediaapp.Service;
 
 
+import com.example.socialmediaapp.Contants.URL_BUCKET_NAME;
 import com.example.socialmediaapp.Exception.AppException;
 import com.example.socialmediaapp.Exception.ErrorCode;
 import com.example.socialmediaapp.Mappers.UserMapper;
 import com.example.socialmediaapp.Models.*;
-import com.example.socialmediaapp.Repository.FollowRepository;
-import com.example.socialmediaapp.Repository.NewLocationTokenRepository;
-import com.example.socialmediaapp.Repository.UserLocationRepository;
-import com.example.socialmediaapp.Repository.UserRepository;
+import com.example.socialmediaapp.Repository.*;
 import com.example.socialmediaapp.Request.UserAddRequest;
 import com.example.socialmediaapp.Responses.UserFollowingResponse;
 import com.example.socialmediaapp.Responses.UserJwtResponse;
@@ -23,8 +21,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.List;
 import java.util.Optional;
@@ -41,7 +41,8 @@ public class UserService {
     private  FollowRepository followRepository;
     @Autowired
     private UserLocationRepository userLocationRepository;
-
+    private final UserImageRepository userImageRepository;
+    private final StorageService storageService;
 
     @Autowired
     private SessionRegistry sessionRegistry;
@@ -57,6 +58,10 @@ public class UserService {
     @Autowired
     private Environment env;
 
+    public UserService(UserImageRepository userImageRepository, StorageService storageService) {
+        this.userImageRepository = userImageRepository;
+        this.storageService = storageService;
+    }
 
 
     public List<UserResponse> getAll(){
@@ -189,21 +194,29 @@ public class UserService {
         }
     }
 
-    public String validateVerificationToken(String token) {
-        User user = userRepository.findByVerificationToken(token).orElse(null);
-        if (user == null) {
-            return "invalid";
-        }
-
-        user.setEnabled(true);
-        userRepository.save(user);
-        return "valid";
-    }
-    public User findUserByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
-
     public void save(User user) {
         userRepository.save(user);
+    }
+    public void uploadProfileImage(int userId, MultipartFile file) throws IOException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        String imageUrl = storageService.uploadFile(URL_BUCKET_NAME.BUCKET_NAME, URL_BUCKET_NAME.AVATAR_FOLDER, file);
+
+        UserImage userImage = new UserImage();
+        userImage.setName(file.getOriginalFilename());
+        userImage.setType(file.getContentType());
+        userImage.setUrl(imageUrl);
+        userImage.setUser(user);
+
+        userImageRepository.save(userImage);
+    }
+
+    public String getProfileImageUrl(int userId) throws IOException {
+        UserImage userImage = userImageRepository.findByUser_Id(userId)
+                .orElseThrow(() -> new RuntimeException("Profile image not found for user: " + userId));
+
+        String fullPath = URL_BUCKET_NAME.AVATAR_FOLDER + userImage.getUrl();
+        return storageService.getSignedUrl(URL_BUCKET_NAME.BUCKET_NAME, fullPath);
     }
 }

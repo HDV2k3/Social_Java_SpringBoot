@@ -32,12 +32,10 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
         User user = event.getUser();
         String token = UUID.randomUUID().toString();
         tokenService.createVerificationToken(user, token);
-
         String recipientAddress = user.getEmail();
-        String confirmationUrl = "http://localhost:3000/email-verification?token=" + token;
-
+        String confirmationUrl = "http://localhost:3000/succes-email-verification?token=" + token;
         try {
-            emailService.sendVerificationEmail(recipientAddress, confirmationUrl);
+            emailService.sendVerificationEmail(recipientAddress,user.getName(),user.getLastName(), confirmationUrl);
         } catch (MessagingException e) {
             // Handle the exception (log it, notify the user, etc.)
             e.printStackTrace();
